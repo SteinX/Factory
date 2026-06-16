@@ -388,7 +388,7 @@ It can be obtained here: [MovieDemo](https://github.com/hmlongco/MovieDemo).
 
 ## Installation
 
-Factory's primary import library is named `FactoryKit`. This is done in order to avoid SPM import conflicts between the library itself and the `Factory` object defined within the library.
+Factory's primary Swift Package Manager import library is named `FactoryKit`. This is done in order to avoid SPM import conflicts between the library itself and the `Factory` object defined within the library.
 
 Just add the Factory package to your project target, select the `FactoryKit` library when asked, and then import `FactoryKit` in your Swift files where needed.
 
@@ -415,15 +415,23 @@ If you're using Swift Testing you'll probably also want to also import the `Fact
 ])
 ```
 
-With the sunsetting of CocoaPods, Factory 3.x supports the Swift Package Manager. Period.
+CocoaPods support is also available for iOS and macOS. The CocoaPods module name remains `Factory`, so Pod users should continue importing `Factory`.
 
-> Note: If you still require CocoaPods support, drop down to Factory 2.5.3, or simply clone and embed Factory in your project directly.
+```ruby
+pod 'Factory', '~> 3.2'
+```
+
+```swift
+import Factory
+```
+
+> Note: The `FactoryTesting` test helper target is only distributed through Swift Package Manager.
 
 ## Migration
 
 Factory 3.0.0 works with SPM, Xcode 26 (and 27) under Strict Concurrency guidelines, and with Swift Testing.
 
-If you're a current Factory user you'll need to update your code and switch from importing `Factory` to importing `FactoryKit`. This avoids SPM naming conflicts between the import library name and the primary `Factory` object.
+If you're a current Factory user migrating through Swift Package Manager you'll need to update your code and switch from importing `Factory` to importing `FactoryKit`. This avoids SPM naming conflicts between the import library name and the primary `Factory` object.
 
 To do so, open your project in Xcode and...
 

@@ -7,6 +7,7 @@
 * Documentation clarification: FactoryKit import required in test target despite warning #369
 * Documentation clarification: Factory declared in a @MainActor accessor crashes when resolved off the main actor #370
 * Claude file and skill files updated
+* Restore CocoaPods support for Factory on iOS and macOS
 
 ## 3.1.0
 

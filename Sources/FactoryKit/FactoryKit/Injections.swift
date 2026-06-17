@@ -228,7 +228,7 @@ extension Injected: @unchecked Sendable where T: Sendable {}
                 thunk().snapshotFactory.resolve()
             },
             reset: { options in
-                thunk().reset(options)
+                thunk().snapshotFactory.reset(options)
             }
         )
     }

@@ -203,6 +203,7 @@ public nonisolated struct FactoryList<T> {
         if manager.state.autoRegistrationCheckNeeded {
             container.unsafeCheckAutoRegistration()
         }
+        let decorator = manager.state.defaultDecorator
         #if DEBUG
         let globalLockRequired = manager.state.hasGraphScope || scope === Scope.graph || globalTraceFlag || globalCircularDependencyTesting
         #else
@@ -234,6 +235,8 @@ public nonisolated struct FactoryList<T> {
         if globalLockRequired {
             globalRecursiveLock.unlock()
         }
+
+        decorator?(instance)
 
         return instance
     }

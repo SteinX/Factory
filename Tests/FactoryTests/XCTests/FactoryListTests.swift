@@ -205,6 +205,25 @@ final class FactoryListTests: XCTestCase {
         XCTAssertEqual(second.handle(), "inline-unique")
     }
 
+    func testInlineItemUsesContainerDecorator() {
+        var decoratedNames: [String] = []
+        FactoryListTestContainer.shared.decorator {
+            if let observer = $0 as? ListObserver {
+                decoratedNames.append(observer.handle())
+            }
+        }
+        FactoryListTestContainer.shared.observers.append(
+            FactoryListItem(key: "decorated-inline") {
+                TestObserver("decorated-inline")
+            }
+            .unique
+        )
+
+        _ = FactoryListTestContainer.shared.observers()[0]
+
+        XCTAssertEqual(decoratedNames, ["decorated-inline"])
+    }
+
     func testKeyPathItemKeepsOwnFactoryScope() {
         FactoryListTestContainer.shared.observers.append(\FactoryListTestContainer.firstObserver)
         FactoryListTestContainer.shared.observers.append(\FactoryListTestContainer.cachedObserver)
@@ -411,6 +430,20 @@ final class FactoryListTests: XCTestCase {
 
         XCTAssertEqual(consumer.names(), ["first"])
         XCTAssertEqual(consumer.$observers.factory().map { $0.handle() }, ["first"])
+    }
+
+    func testLazyInjectedFactoryListResetRefreshesSnapshotWithoutClearingList() {
+        let consumer = FactoryListConsumer()
+        _ = consumer.$observers.factory.cached
+
+        FactoryListTestContainer.shared.observers.append(\FactoryListTestContainer.firstObserver)
+        consumer.$observers.resolve(reset: .none)
+
+        FactoryListTestContainer.shared.observers.append(\FactoryListTestContainer.secondObserver)
+        consumer.$observers.resolve(reset: .all)
+
+        XCTAssertEqual(consumer.names(), ["first", "second"])
+        XCTAssertEqual(FactoryListTestContainer.shared.observers().map { $0.handle() }, ["first", "second"])
     }
 
     func testLazyInjectedFactoryListSupportsDefaultContainerKeyPath() {

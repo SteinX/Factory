@@ -340,13 +340,13 @@ public final nonisolated class ContainerManager: @unchecked Sendable {
         lock.withLock {
             switch options {
             case .all:
-                return cache.isEmpty && unsafeRegistrationsAreEmpty() && unsafeContextsAreEmpty()
+                return cache.isEmpty && lists.isEmpty && unsafeRegistrationsAreEmpty() && unsafeContextsAreEmpty()
             case .context:
                 return unsafeContextsAreEmpty()
             case .none:
                 return true
             case .registration:
-                return unsafeRegistrationsAreEmpty()
+                return lists.isEmpty && unsafeRegistrationsAreEmpty()
             case .scope:
                 return cache.isEmpty
             }
@@ -366,6 +366,10 @@ public final nonisolated class ContainerManager: @unchecked Sendable {
     internal typealias FactoryOptionsMap = [FactoryKey:FactoryOptions]
     internal var options: FactoryOptionsMap = .init(minimumCapacity: 256)
 
+    /// Updated options for FactoryList's.
+    internal typealias FactoryListOptionsMap = [FactoryKey:FactoryListOptions]
+    internal var lists: FactoryListOptionsMap = .init(minimumCapacity: 32)
+
     /// Scope cache for Factory's managed by this container.
     internal var cache: Scope.Cache = Scope.Cache(minimumCapacity: 256)
 
@@ -373,7 +377,7 @@ public final nonisolated class ContainerManager: @unchecked Sendable {
     internal var state: InternalState = .init()
 
     /// Push/Pop stack for registrations, options, cache, and so on.
-    internal var stack: [(FactoryOptionsMap, Scope.Cache.CacheMap, InternalState)] = []
+    internal var stack: [(FactoryOptionsMap, Scope.Cache.CacheMap, InternalState, FactoryListOptionsMap)] = []
 
     /// Flag indicating auto registration is in process.
     internal var autoRegistering = false
@@ -404,7 +408,11 @@ extension ContainerManager {
         lock.withLock {
             switch options {
             case .all:
+                self.lists.values.forEach { list in
+                    list.items.forEach { $0.reset(options) }
+                }
                 self.options.removeAll(keepingCapacity: true)
+                self.lists.removeAll(keepingCapacity: true)
                 self.cache.reset()
                 self.state = .init()
             case .context:
@@ -422,6 +430,10 @@ extension ContainerManager {
                     mutable.registration = nil
                     self.options[key] = mutable
                 }
+                self.lists.values.forEach { list in
+                    list.items.forEach { $0.reset(options) }
+                }
+                self.lists.removeAll(keepingCapacity: true)
                 self.state.autoRegistrationCheckNeeded = true
             case .scope:
                 self.cache.reset()
@@ -447,7 +459,7 @@ extension ContainerManager {
     /// Test function pushes the current registration and cache states
     public func push() {
         lock.withLock {
-            stack.append((options, cache.clone().cache, state))
+            stack.append((options, cache.clone().cache, state, lists))
         }
     }
 
@@ -458,6 +470,7 @@ extension ContainerManager {
                 options = values.0
                 cache.assign(map: values.1)
                 state = values.2
+                lists = values.3
             }
         }
     }

@@ -173,6 +173,24 @@ final class FactoryListTests: XCTestCase {
         XCTAssertNil(weakContainer)
     }
 
+    func testInlineItemDoesNotRetainOwningContainerInstance() {
+        weak var weakContainer: InstanceOnlyFactoryListContainer?
+
+        do {
+            let container = InstanceOnlyFactoryListContainer()
+            weakContainer = container
+            container.observers.append(
+                FactoryListItem(key: "inline-retain") {
+                    TestObserver("inline-retain")
+                }
+            )
+
+            XCTAssertEqual(container.observers()[0].handle(), "inline-retain")
+        }
+
+        XCTAssertNil(weakContainer)
+    }
+
     func testInlineItemUsesListDefaultScope() {
         FactoryListTestContainer.shared.observers.append(
             FactoryListItem(key: "inline") {

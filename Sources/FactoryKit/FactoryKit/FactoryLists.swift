@@ -89,7 +89,16 @@ public nonisolated struct FactoryList<T> {
     }
 
     @discardableResult
+    public func append(_ keyPath: KeyPath<Container, Factory<T>>) -> Self {
+        appendFactory(keyPath)
+    }
+
+    @discardableResult
     public func append<C: SharedContainer>(_ keyPath: KeyPath<C, Factory<T>>) -> Self {
+        appendFactory(keyPath)
+    }
+
+    private func appendFactory<C: SharedContainer>(_ keyPath: KeyPath<C, Factory<T>>) -> Self {
         let target = (container as? C) ?? C.shared
         let factory = target[keyPath: keyPath]
         let entryKey = FactoryListItemKey.factory(container: C.self, key: factory.registration.key)

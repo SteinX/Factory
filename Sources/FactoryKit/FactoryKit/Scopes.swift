@@ -274,6 +274,9 @@ extension Scope {
         @inlinable @inline(__always) func removeValue(forKey key: FactoryKey) {
             lock.withWriteLock { cache = cache.filter { $0.key.normalized() != key } }
         }
+        @inlinable @inline(__always) func removeExactValue(forKey key: FactoryKey) {
+            lock.withWriteLock { _ = cache.removeValue(forKey: key) }
+        }
         internal func reset(scopeID: UUID) {
             lock.withWriteLock { cache = cache.filter { $1.scopeID != scopeID } }
         }

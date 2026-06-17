@@ -117,20 +117,40 @@ extension Injected: @unchecked Sendable where T: Sendable {}
         var initialized = false
     }
 
-    private var thunk: () -> Factory<T>
+    private struct Source {
+        let factory: () -> Factory<T>
+        let resolve: () -> T
+        let reset: (FactoryResetOptions) -> Void
+    }
+
+    private var source: Source
     private let storage: Storage
 
     /// Initializes the property wrapper. The dependency isn't resolved until the wrapped value is accessed for the first time.
     /// - Parameter keyPath: KeyPath to a Factory on the default Container.
     public init(_ keyPath: KeyPath<Container, Factory<T>>) {
-        self.thunk = { Container.shared[keyPath: keyPath] }
+        self.source = Self.source(for: { Container.shared[keyPath: keyPath] })
         self.storage = Storage()
     }
 
     /// Initializes the property wrapper. The dependency isn't resolved until the wrapped value is accessed for the first time.
     /// - Parameter keyPath: KeyPath to a Factory on the specified Container.
     public init<C:SharedContainer>(_ keyPath: KeyPath<C, Factory<T>>) {
-        self.thunk = { C.shared[keyPath: keyPath] }
+        self.source = Self.source(for: { C.shared[keyPath: keyPath] })
+        self.storage = Storage()
+    }
+
+    /// Initializes the property wrapper. The snapshot isn't resolved until the wrapped value is accessed for the first time.
+    /// - Parameter keyPath: KeyPath to a FactoryList on the default Container.
+    public init<Element>(_ keyPath: KeyPath<Container, FactoryList<Element>>) where T == FactoryListSnapshot<Element> {
+        self.source = Self.source(for: { Container.shared[keyPath: keyPath] })
+        self.storage = Storage()
+    }
+
+    /// Initializes the property wrapper. The snapshot isn't resolved until the wrapped value is accessed for the first time.
+    /// - Parameter keyPath: KeyPath to a FactoryList on the specified Container.
+    public init<C:SharedContainer, Element>(_ keyPath: KeyPath<C, FactoryList<Element>>) where T == FactoryListSnapshot<Element> {
+        self.source = Self.source(for: { C.shared[keyPath: keyPath] })
         self.storage = Storage()
     }
 
@@ -139,7 +159,7 @@ extension Injected: @unchecked Sendable where T: Sendable {}
         get {
             storage.lock.withLock {
                 if !storage.initialized {
-                    storage.dependency = thunk().resolve()
+                    storage.dependency = source.resolve()
                     storage.initialized = true
                 }
                 return storage.dependency!
@@ -161,15 +181,14 @@ extension Injected: @unchecked Sendable where T: Sendable {}
 
     /// Grants access to the internal Factory.
     public var factory: Factory<T> {
-        thunk()
+        source.factory()
     }
 
     /// Allows the user to force a Factory resolution at their discretion.
     public func resolve(reset options: FactoryResetOptions = .none) {
         storage.lock.withLock {
-            let factory = thunk()
-            factory.reset(options)
-            storage.dependency = factory()
+            source.reset(options)
+            storage.dependency = source.resolve()
             storage.initialized = true
         }
     }
@@ -184,6 +203,34 @@ extension Injected: @unchecked Sendable where T: Sendable {}
     /// }
     public func resolvedOrNil() -> T? {
         storage.lock.withLock { storage.initialized ? storage.dependency : nil }
+    }
+
+    private static func source(for thunk: @escaping () -> Factory<T>) -> Source {
+        Source(
+            factory: thunk,
+            resolve: {
+                thunk().resolve()
+            },
+            reset: { options in
+                thunk().reset(options)
+            }
+        )
+    }
+
+    private static func source<Element>(
+        for thunk: @escaping () -> FactoryList<Element>
+    ) -> Source where T == FactoryListSnapshot<Element> {
+        Source(
+            factory: {
+                thunk().snapshotFactory
+            },
+            resolve: {
+                thunk().snapshotFactory.resolve()
+            },
+            reset: { options in
+                thunk().reset(options)
+            }
+        )
     }
 
 }

@@ -135,11 +135,18 @@ public nonisolated struct FactoryList<T> {
         let entryKey = FactoryListItemKey.inline(key: item.key)
         let scope = item.scope ?? defaultScope ?? .unique
         let scopeKey = inlineScopeKey(for: item)
-        let entry = TypedFactoryListEntry(key: entryKey) {
-            resolveInlineItem(key: scopeKey, scope: scope, factory: item.factory)
-        } reset: { options in
+        let container = container
+        let entry = TypedFactoryListEntry(key: entryKey) { [weak container] in
+            guard let container else {
+                preconditionFailure("FACTORY: FactoryList source container was released before resolution.")
+            }
+            return Self.resolveInlineItem(container: container, key: scopeKey, scope: scope, factory: item.factory)
+        } reset: { [weak container] options in
             switch options {
             case .all, .registration, .scope:
+                guard let container else {
+                    return
+                }
                 let cache = (scope as? InternalScopeCaching)?.cache ?? container.manager.cache
                 cache.removeExactValue(forKey: scopeKey)
             case .context, .none:
@@ -193,7 +200,8 @@ public nonisolated struct FactoryList<T> {
             .parameterized(FactoryListInlineScopeKey(list: key, item: item.key))
     }
 
-    internal func resolveInlineItem(
+    internal static func resolveInlineItem(
+        container: ManagedContainer,
         key: FactoryKey,
         scope: Scope,
         factory: @escaping VoidFactoryType<T>

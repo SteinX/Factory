@@ -379,7 +379,7 @@ final class FactoryListTests: XCTestCase {
     }
 
     func testLazyInjectedFactoryListSupportsDefaultContainerKeyPath() {
-        Container.shared.defaultObservers.append(\Container.defaultObserver)
+        Container.shared.defaultObservers.append(\.defaultObserver)
 
         let consumer = DefaultFactoryListConsumer()
 

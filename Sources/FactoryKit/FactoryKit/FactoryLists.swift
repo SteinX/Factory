@@ -90,23 +90,44 @@ public nonisolated struct FactoryList<T> {
 
     @discardableResult
     public func append(_ keyPath: KeyPath<Container, Factory<T>>) -> Self {
-        appendFactory(keyPath)
+        let target = (container as? Container) ?? Container.shared
+        return appendFactory(keyPath, target: target)
+    }
+
+    @discardableResult
+    public func append<C: ManagedContainer>(_ keyPath: KeyPath<C, Factory<T>>) -> Self {
+        guard let target = container as? C else {
+            preconditionFailure("FACTORY: FactoryList key path for \(C.self) requires the list's container to be \(C.self) or a SharedContainer.")
+        }
+        return appendFactory(keyPath, target: target)
     }
 
     @discardableResult
     public func append<C: SharedContainer>(_ keyPath: KeyPath<C, Factory<T>>) -> Self {
-        appendFactory(keyPath)
+        let target = (container as? C) ?? C.shared
+        return appendFactory(keyPath, target: target)
     }
 
-    private func appendFactory<C: SharedContainer>(_ keyPath: KeyPath<C, Factory<T>>) -> Self {
-        let target = (container as? C) ?? C.shared
+    private func appendFactory<C: ManagedContainer>(_ keyPath: KeyPath<C, Factory<T>>, target: C) -> Self {
         let factory = target[keyPath: keyPath]
         let entryKey = FactoryListItemKey.factory(container: C.self, key: factory.registration.key)
-        let entry = TypedFactoryListEntry(key: entryKey) {
-            target[keyPath: keyPath].resolve()
-        }
+        let entry = TypedFactoryListEntry(key: entryKey, resolve: factoryResolver(keyPath, target: target))
         append(entry)
         return self
+    }
+
+    private func factoryResolver<C: ManagedContainer>(_ keyPath: KeyPath<C, Factory<T>>, target: C) -> () -> T {
+        guard ObjectIdentifier(target) == ObjectIdentifier(container) else {
+            return {
+                target[keyPath: keyPath].resolve()
+            }
+        }
+        return { [weak target] in
+            guard let target else {
+                preconditionFailure("FACTORY: FactoryList source container was released before resolution.")
+            }
+            return target[keyPath: keyPath].resolve()
+        }
     }
 
     @discardableResult

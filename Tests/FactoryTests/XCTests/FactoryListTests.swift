@@ -67,6 +67,18 @@ private final class FactoryListTestContainer: SharedContainer {
     }
 }
 
+private final class InstanceOnlyFactoryListContainer: ManagedContainer {
+    let manager = ContainerManager()
+
+    var observers: FactoryList<ListObserver> {
+        list(scope: .shared)
+    }
+
+    var observer: Factory<ListObserver> {
+        self { TestObserver("instance-only") }
+    }
+}
+
 extension Container {
     fileprivate var defaultObservers: FactoryList<ListObserver> {
         list(scope: .shared)
@@ -136,6 +148,29 @@ final class FactoryListTests: XCTestCase {
 
         XCTAssertEqual(container.observers().map { $0.handle() }, ["instance"])
         XCTAssertTrue(FactoryListTestContainer.shared.observers().isEmpty)
+    }
+
+    func testManagedContainerKeyPathItemsResolveOnOwningInstance() {
+        let container = InstanceOnlyFactoryListContainer()
+        container.observer.register { TestObserver("registered-instance") }
+
+        container.observers.append(\InstanceOnlyFactoryListContainer.observer)
+
+        XCTAssertEqual(container.observers().map { $0.handle() }, ["registered-instance"])
+    }
+
+    func testKeyPathItemDoesNotRetainOwningContainerInstance() {
+        weak var weakContainer: InstanceOnlyFactoryListContainer?
+
+        do {
+            let container = InstanceOnlyFactoryListContainer()
+            weakContainer = container
+            container.observers.append(\InstanceOnlyFactoryListContainer.observer)
+
+            XCTAssertEqual(container.observers().map { $0.handle() }, ["instance-only"])
+        }
+
+        XCTAssertNil(weakContainer)
     }
 
     func testInlineItemUsesListDefaultScope() {

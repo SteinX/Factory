@@ -43,6 +43,7 @@ Ready to get started?
 - <doc:Design>
 - <doc:Modifiers>
 - <doc:Modules>
+- <doc:Lists>
 - <doc:Cycle>
 - <doc:Optionals>
 - <doc:Functional>

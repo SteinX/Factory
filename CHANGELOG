@@ -1,5 +1,9 @@
 # Factory Changelog
 
+### 3.2.3
+
+* Fix for key regression issue #373
+
 ### 3.2.2
 
 * Factory supports Xcode 27 skill manifests and its skill can now be imported into Xcode

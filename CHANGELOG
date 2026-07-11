@@ -1,5 +1,9 @@
 # Factory Changelog
 
+### 3.3.1
+
+* Fix debug function in release build #376
+
 ### 3.3.0
 
 * Breaking change to graph scope management and performance on containers

@@ -208,7 +208,9 @@ extension FactoryRegistration {
             manager.options[key] = FactoryOptions(scope: scope)
         }
         if scope === Scope.graph && manager.state.hasGraphScope == false {
+            #if DEBUG
             globalLogger("FACTORY: Graph scope requested on container where graphScopeEnabled was false. Results indeterminate.")
+            #endif
             manager.state.hasGraphScope = true
         }
     }

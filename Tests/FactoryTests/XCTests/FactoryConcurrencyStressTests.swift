@@ -128,11 +128,17 @@ final class FactoryConcurrencyStressTests: XCTestCase, @unchecked Sendable {
 
 // MARK: - Test Helpers
 
-private final class StressContainer: SharedContainer {
+private final class StressContainer: SharedContainer, AutoRegistering {
     static let shared = StressContainer()
     let manager = ContainerManager()
 
-    var s0: Factory<StressService> { self { StressService() } }
+    func autoRegister() {
+        manager.graphScopeEnabled = true
+    }
+
+    var s0: Factory<StressService> {
+        self { StressService() }
+    }
 
     var cachedService: Factory<StressService> {
         self { StressService() }.cached

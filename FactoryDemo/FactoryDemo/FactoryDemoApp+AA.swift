@@ -21,7 +21,7 @@ final class AAMockService: AAService {
 }
 
 final class AAContainer: SharedContainer {
-    static let shared = AAContainer()
+    @TaskLocal static var shared = AAContainer()
     let manager = ContainerManager()
 
     var service: Factory<AAService> {
@@ -40,5 +40,12 @@ final class AAViewModel {
     @Injected(\AAContainer.service) var service
     var name: String {
         service.name
+    }
+}
+
+extension Container {
+    var aaService: Factory<AAService> {
+        self { AADefaultService() }
+            .cached
     }
 }

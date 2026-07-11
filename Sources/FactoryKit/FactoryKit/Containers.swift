@@ -307,8 +307,25 @@ public final nonisolated class ContainerManager: @unchecked Sendable {
 
     /// Default scope. Setting scope to nil returns the default to `unique`.
     public var defaultScope: Scope? {
-        get { globalVariableLock.withLock { state.defaultScope } }
-        set { globalVariableLock.withLock { state.defaultScope = newValue } }
+        get {
+            globalVariableLock.withLock {
+                state.defaultScope
+            }
+        }
+        set {
+            globalVariableLock.withLock {
+                state.defaultScope = newValue
+                if newValue === Scope.graph {
+                    state.hasGraphScope = true
+                }
+            }
+        }
+    }
+
+    /// Enables `graph` scope and mode on current container.
+    public var graphScopeEnabled: Bool {
+        get { globalVariableLock.withLock { state.hasGraphScope } }
+        set { globalVariableLock.withLock { state.hasGraphScope = newValue } }
     }
 
     #if DEBUG

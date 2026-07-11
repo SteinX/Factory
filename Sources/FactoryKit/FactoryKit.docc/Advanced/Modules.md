@@ -265,7 +265,7 @@ Pure-static graphs do not have this problem. If your features are static librari
 
 ### `FactoryKitDynamic`
 
-For projects that need to cross dynamic boundaries, the package vends a second product alongside `FactoryKit`:
+For projects with separately compiled modules or targets that need to cross dynamic boundaries, the package vends a second product alongside `FactoryKit`:
 
 ```swift
 .library(
@@ -277,7 +277,13 @@ targets: ["FactoryKit"]
 
 `FactoryKitDynamic` wraps the same FactoryKit target as the default product but forces it to be linked as a separate dylib. Every dynamic feature framework that depends on `FactoryKitDynamic` — plus the app target itself — resolves FactoryKit symbols from a single shared image at runtime. One `Container.shared`, one set of registrations, one set of scope caches.
 
-`FactoryTesting` is unaffected. They continue to depend on the FactoryKit target by name, and at runtime they resolve their FactoryKit references against whichever copy the consumer linked.
+The project *links* `FactoryKitDynamic`, the source code still *imports* `FactoryKit`.
+
+```swift
+import FactoryKit
+```
+
+`FactoryTesting` may be affected here, in which case you may need to copy [`ContainerTrait.swift`](https://github.com/hmlongco/Factory/blob/main) to your test project. See: <doc:Testing> for more information.
 
 ### When to use it
 

@@ -7,11 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4C6EB72F2E9AECBA0038D888 /* FactoryKit in Frameworks */ = {isa = PBXBuildFile; productRef = 4C6EB72E2E9AECBA0038D888 /* FactoryKit */; };
 		4CCC83FE2868CF5B00B474F7 /* Common.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CCC83F52868CF5B00B474F7 /* Common.framework */; };
 		4CCC84032868CF5B00B474F7 /* CommonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CCC84022868CF5B00B474F7 /* CommonTests.swift */; };
 		4CCC84042868CF5B00B474F7 /* Common.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CCC83F82868CF5B00B474F7 /* Common.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4CCC84542868D01D00B474F7 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CCC84532868D01D00B474F7 /* Common.swift */; };
+		4CEE47C12FFFE53100470E71 /* FactoryKitDynamic in Frameworks */ = {isa = PBXBuildFile; productRef = 4CEE47C02FFFE53100470E71 /* FactoryKitDynamic */; };
+		4CEE47C22FFFE53100470E71 /* FactoryKitDynamic in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 4CEE47C02FFFE53100470E71 /* FactoryKitDynamic */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -23,6 +24,20 @@
 			remoteInfo = Common;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		4CEE47C32FFFE53100470E71 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				4CEE47C22FFFE53100470E71 /* FactoryKitDynamic in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		4CCC83F52868CF5B00B474F7 /* Common.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Common.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -37,7 +52,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4C6EB72F2E9AECBA0038D888 /* FactoryKit in Frameworks */,
+				4CEE47C12FFFE53100470E71 /* FactoryKitDynamic in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -117,6 +132,7 @@
 				4CCC83F12868CF5B00B474F7 /* Sources */,
 				4CCC83F22868CF5B00B474F7 /* Frameworks */,
 				4CCC83F32868CF5B00B474F7 /* Resources */,
+				4CEE47C32FFFE53100470E71 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -124,7 +140,7 @@
 			);
 			name = Common;
 			packageProductDependencies = (
-				4C6EB72E2E9AECBA0038D888 /* FactoryKit */,
+				4CEE47C02FFFE53100470E71 /* FactoryKitDynamic */,
 			);
 			productName = Common;
 			productReference = 4CCC83F52868CF5B00B474F7 /* Common.framework */;
@@ -483,9 +499,9 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		4C6EB72E2E9AECBA0038D888 /* FactoryKit */ = {
+		4CEE47C02FFFE53100470E71 /* FactoryKitDynamic */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = FactoryKit;
+			productName = FactoryKitDynamic;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

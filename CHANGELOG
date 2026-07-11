@@ -1,5 +1,13 @@
 # Factory Changelog
 
+### 3.3.0
+
+* Breaking change to graph scope management and performance on containers
+* Adds manager.graphScopeEnabled flag to container (required if any of a container's scopes are .graph)
+* Automatically sets manager.graphScopeEnabled flag if a container's default scope is set to .graph
+* Update FactoryTesting documentation and recommendations per #372
+* Key simplification changes
+
 ### 3.2.3
 
 * Fix for key regression issue #373

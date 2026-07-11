@@ -248,6 +248,8 @@ final class FactoryCoreTests: XCTestCase {
 
     func testTrace() {
         var log: [String] = []
+        // Temporarily enable
+        Container.shared.manager.graphScopeEnabled = true
         Container.shared.manager.logger = {
             log.append($0)
             print($0)
@@ -287,6 +289,8 @@ final class FactoryCoreTests: XCTestCase {
         Container.shared.manager.logger = {
             print($0)
         }
+        // Reset
+        Container.shared.manager.graphScopeEnabled = false
     }
 
 #if canImport(SwiftUI)

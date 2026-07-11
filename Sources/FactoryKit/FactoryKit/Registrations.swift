@@ -61,12 +61,13 @@ public nonisolated struct FactoryRegistration<P,T> {
 
         let options: FactoryOptions? = manager.options[key]
         let scope: Scope? = options?.scope ?? manager.defaultScope
+        let hasGraphScope = manager.state.hasGraphScope
         let decorator: ((Any) -> ())? = manager.state.defaultDecorator
 
         #if DEBUG
-        let globalLockRequired = manager.state.hasGraphScope || globalTraceFlag || globalCircularDependencyTesting
+        let globalLockRequired = hasGraphScope || globalTraceFlag || globalCircularDependencyTesting
         #else
-        let globalLockRequired = manager.state.hasGraphScope
+        let globalLockRequired = hasGraphScope
         #endif
 
         manager.lock.unlock()
@@ -116,7 +117,9 @@ public nonisolated struct FactoryRegistration<P,T> {
         }
         #endif
 
-        Scope.graph.enter()
+        if hasGraphScope {
+            Scope.graph.enter()
+        }
 
         if let scope {
             let pKey = options?.scopeOnParameters == true ? key.parameterized(parameters) : key
@@ -125,7 +128,9 @@ public nonisolated struct FactoryRegistration<P,T> {
             (instance, instantiated) = (current(parameters), true)
         }
 
-        Scope.graph.leave()
+        if hasGraphScope {
+            Scope.graph.leave()
+        }
 
         #if DEBUG
         if globalCircularDependencyTesting {
@@ -202,7 +207,8 @@ extension FactoryRegistration {
         } else {
             manager.options[key] = FactoryOptions(scope: scope)
         }
-        if scope === Scope.graph {
+        if scope === Scope.graph && manager.state.hasGraphScope == false {
+            globalLogger("FACTORY: Graph scope requested on container where graphScopeEnabled was false. Results indeterminate.")
             manager.state.hasGraphScope = true
         }
     }

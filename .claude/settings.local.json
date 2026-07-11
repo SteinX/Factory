@@ -5,7 +5,18 @@
       "Bash(swift test *)",
       "Bash(git -C /Users/michael/Dropbox/Projects/iOS/OSS/Factory/Factory branch --show-current)",
       "Bash(git -C /Users/michael/Dropbox/Projects/iOS/OSS/Factory/Factory status --short)",
-      "Bash(tail -30 /Users/michael/Dropbox/Projects/iOS/OSS/Factory/Articles/callAsFunction.md)"
+      "Bash(tail -30 /Users/michael/Dropbox/Projects/iOS/OSS/Factory/Articles/callAsFunction.md)",
+      "Bash(swift package *)",
+      "Bash(ln -s Sources/FactoryTesting /tmp/factorytesting_symlink_test)",
+      "Read(//tmp/**)",
+      "Bash(rm -f /tmp/factorytesting_symlink_test)",
+      "Bash(ln -s FactoryTesting Sources/FactoryTestingDynamicSrc)",
+      "Bash(python3 -c ' *)",
+      "Bash(otool -L .build/out/Products/Debug/libFactoryTestingDynamic.dylib)",
+      "Bash(nm -gU .build/out/Products/Debug/libFactoryTestingDynamic.dylib)",
+      "Bash(ln -s ../../../Sources/FactoryTesting/ContainerTrait.swift ContainerTrait.swift)",
+      "Bash(nm -gu .build/out/Products/Debug/libFactoryTestingDynamic.dylib)",
+      "Bash(awk '/4CA5899529DE482D00FA7845 \\\\/\\\\* FactoryDemoTests \\\\*\\\\/ = \\\\{/,/^\\\\t\\\\t\\\\};/' FactoryDemo/FactoryDemo.xcodeproj/project.pbxproj)"
     ]
   }
 }

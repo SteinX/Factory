@@ -9,7 +9,7 @@ import Testing
 import FactoryKit
 import FactoryTesting
 
-@testable import FactoryTestingTest
+@testable import FactorySimpleDemo
 
 @MainActor
 @Suite(.container)

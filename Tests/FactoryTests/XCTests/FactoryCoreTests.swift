@@ -206,6 +206,14 @@ final class FactoryCoreTests: XCTestCase {
     }
 
     @MainActor
+    func testCrossContainerCircularDependencyFalsePositive() {
+        Container.shared.manager.trace = true
+        let service: MyServiceType = CustomContainer.shared.crossServiceType()
+        XCTAssertNotNil(service)
+        Container.shared.manager.trace = false
+    }
+
+    @MainActor
     func testCircularDependencyToggle() {
         Container.shared.manager.circularDependencyTesting.toggle()
         var valid: Bool = false

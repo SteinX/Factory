@@ -1,5 +1,9 @@
 # Factory Changelog
 
+### 3.3.2
+
+* Circular-dependency check false-positives on cross-container delegation #377
+
 ### 3.3.1
 
 * Fix debug function in release build #376

@@ -110,7 +110,9 @@ public nonisolated struct FactoryRegistration<P,T> {
             globalTraceResolutions.append(entry)
         }
 
-        if globalCircularDependencyTesting, globalCircularDependencyKeys.insert(key).0 == false {
+        let recursiveKey = RecursiveKey(container: container, key: key)
+
+        if globalCircularDependencyTesting, globalCircularDependencyKeys.insert(recursiveKey).0 == false {
             globalTraceResolutions.forEach { globalLogger($0) }
             let message = "FACTORY: Circular dependency on \(type(of: container)).\(key.key)"
             resetAndTriggerFatalError(message, #file, #line)
@@ -134,7 +136,7 @@ public nonisolated struct FactoryRegistration<P,T> {
 
         #if DEBUG
         if globalCircularDependencyTesting {
-            globalCircularDependencyKeys.remove(key)
+            globalCircularDependencyKeys.remove(recursiveKey)
         }
 
         if globalTraceFlag {

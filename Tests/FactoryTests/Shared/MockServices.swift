@@ -174,6 +174,16 @@ extension Container {
     var recursiveA: Factory<RecursiveA?> { self { RecursiveA() } }
     var recursiveB: Factory<RecursiveB?> { self { RecursiveB() } }
     var recursiveC: Factory<RecursiveC?> { self { RecursiveC() } }
+
+    var crossServiceType: Factory<MyServiceType> {
+        self { MyService() }
+    }
+}
+
+extension CustomContainer {
+    var crossServiceType: Factory<MyServiceType> {
+        self { Container.shared.crossServiceType() }
+    }
 }
 
 // Classes for implements scope tests

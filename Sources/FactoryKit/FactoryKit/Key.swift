@@ -87,3 +87,12 @@ extension StaticString: @retroactive Hashable {
         }
     }
 }
+
+struct RecursiveKey: Hashable, Equatable {
+    let container: ObjectIdentifier
+    let key: FactoryKey
+    init(container: ManagedContainer, key: FactoryKey) {
+        self.container = ObjectIdentifier(container)
+        self.key = key
+    }
+}

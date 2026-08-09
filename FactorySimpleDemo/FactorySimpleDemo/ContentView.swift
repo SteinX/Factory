@@ -18,7 +18,12 @@ struct ContentView: View {
 }
 
 #Preview {
-    Container.shared.myClass { MockClass() }
+    // Formal registration
+    let _ = Container.shared.myClass.register { MockClass("MockClass 1") }
+    ContentView()
+
+    // Sugared registration
+    Container.shared.myClass { MockClass("MockClass 2") }
     ContentView()
 }
 
@@ -31,7 +36,10 @@ class MyClass: MyProtocol {
 }
 
 class MockClass: MyProtocol {
-    var name = "MockClass"
+    let name: String
+    init(_ name: String = "MockClass") {
+        self.name = name
+    }
 }
 
 extension Container {

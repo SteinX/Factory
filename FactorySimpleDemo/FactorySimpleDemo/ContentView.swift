@@ -10,40 +10,61 @@ import FactoryKit
 }
 
 struct ContentView: View {
-    @Injected(\.myClass) var myClass
+    @State var viewModel = ContentViewModel()
     var body: some View {
-        Text("Hello, \(myClass.name)!")
-            .padding()
+        VStack {
+            Text("Hello, \(viewModel.name)!")
+            Button("Reload") {
+                viewModel.reload()
+            }
+        }
+        .padding()
+        .task {
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
+            viewModel.load()
+        }
     }
 }
 
 #Preview {
-    // Formal registration
-    let _ = Container.shared.myClass.register { MockClass("MockClass 1") }
+    // Formal registration of dependent service
+    let _ = Container.shared.myService.register { MockService("MockService 1") }
     ContentView()
 
     // Sugared registration
-    Container.shared.myClass { MockClass("MockClass 2") }
+    Container.shared.myService { MockService("MockService 2") }
     ContentView()
+}
+
+@Observable
+class ContentViewModel {
+    @ObservationIgnored @Injected(\.myService) var myService
+    private(set) var name: String = "Loading"
+    func load() {
+        name = myService.name
+    }
+    func reload() {
+        name = "Service Reloaded"
+    }
 }
 
 protocol MyProtocol {
     var name: String { get }
 }
 
-class MyClass: MyProtocol {
-    var name = "MyClass"
+class MyService: MyProtocol {
+    var name = "MyService"
 }
 
-class MockClass: MyProtocol {
-    let name: String
-    init(_ name: String = "MockClass") {
+class MockService: MyProtocol {
+    var name: String
+    init(_ name: String = "MockService") {
         self.name = name
     }
 }
 
 extension Container {
-    @MainActor var myClass: Factory<MyProtocol> {
-        self { MyClass() }
+    @MainActor var myService: Factory<MyProtocol> {
+        self { MyService() }
     }
 }

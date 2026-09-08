@@ -174,6 +174,16 @@ extension Container {
     var recursiveA: Factory<RecursiveA?> { self { RecursiveA() } }
     var recursiveB: Factory<RecursiveB?> { self { RecursiveB() } }
     var recursiveC: Factory<RecursiveC?> { self { RecursiveC() } }
+
+    var crossServiceType: Factory<MyServiceType> {
+        self { MyService() }
+    }
+}
+
+extension CustomContainer {
+    var crossServiceType: Factory<MyServiceType> {
+        self { Container.shared.crossServiceType() }
+    }
 }
 
 // Classes for implements scope tests
@@ -195,8 +205,11 @@ extension Container {
 
 final class CustomContainer: SharedContainer, AutoRegistering {
     @TaskLocal static var shared = CustomContainer()
+    let manager = ContainerManager()
+
     nonisolated(unsafe) static var count = 0
     nonisolated(unsafe) var count = 0
+
     var test: Factory<MyServiceType> {
         self {
             MockServiceN(32)
@@ -243,18 +256,21 @@ final class CustomContainer: SharedContainer, AutoRegistering {
     }
     func autoRegister() {
         print("CustomContainer AUTOREGISTERING")
+
+        self.manager.graphScopeEnabled = true
+
         Self.count = 1
         self.count = 1
         self.decorator { _ in
             Self.count += 1
         }
+
         #if DEBUG
         decorator {
             print("FACTORY: \(type(of: $0)) (\(Int(bitPattern: ObjectIdentifier($0 as AnyObject))))")
         }
         #endif
     }
-    let manager = ContainerManager()
 }
 
 // Classes for graph scope tests

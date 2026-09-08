@@ -224,7 +224,8 @@ public nonisolated struct FactoryList<T> {
         }
 
         #if DEBUG
-        if globalCircularDependencyTesting, globalCircularDependencyKeys.insert(key).0 == false {
+        let recursiveKey = RecursiveKey(container: container, key: key)
+        if globalCircularDependencyTesting, globalCircularDependencyKeys.insert(recursiveKey).0 == false {
             let message = "FACTORY: Circular dependency on \(type(of: container)).\(key.key)"
             resetAndTriggerFatalError(message, #file, #line)
         }
@@ -236,7 +237,7 @@ public nonisolated struct FactoryList<T> {
 
         #if DEBUG
         if globalCircularDependencyTesting {
-            globalCircularDependencyKeys.remove(key)
+            globalCircularDependencyKeys.remove(recursiveKey)
         }
         #endif
 

@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4C6EB7312E9AECC30038D888 /* FactoryKit in Frameworks */ = {isa = PBXBuildFile; productRef = 4C6EB7302E9AECC30038D888 /* FactoryKit */; };
 		4C9ACE402E02207B008CF8E6 /* Networking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CCC84202868CF8800B474F7 /* Networking.framework */; platformFilter = ios; };
 		4C9ACE412E02207B008CF8E6 /* Networking.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4CCC84202868CF8800B474F7 /* Networking.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4CCC842E2868CF8900B474F7 /* NetworkingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CCC842D2868CF8900B474F7 /* NetworkingTests.swift */; };
@@ -15,6 +14,8 @@
 		4CCC844D2868CFE500B474F7 /* Common.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CCC844C2868CFE500B474F7 /* Common.framework */; };
 		4CCC844E2868CFE500B474F7 /* Common.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4CCC844C2868CFE500B474F7 /* Common.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4CCC84562868D03300B474F7 /* Networking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CCC84552868D03300B474F7 /* Networking.swift */; };
+		4CEE47C52FFFE54000470E71 /* FactoryKitDynamic in Frameworks */ = {isa = PBXBuildFile; productRef = 4CEE47C42FFFE54000470E71 /* FactoryKitDynamic */; };
+		4CEE47C62FFFE54000470E71 /* FactoryKitDynamic in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 4CEE47C42FFFE54000470E71 /* FactoryKitDynamic */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,6 +46,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				4CEE47C62FFFE54000470E71 /* FactoryKitDynamic in Embed Frameworks */,
 				4CCC844E2868CFE500B474F7 /* Common.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -66,7 +68,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4C6EB7312E9AECC30038D888 /* FactoryKit in Frameworks */,
+				4CEE47C52FFFE54000470E71 /* FactoryKitDynamic in Frameworks */,
 				4CCC844D2868CFE500B474F7 /* Common.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -156,7 +158,7 @@
 			);
 			name = Networking;
 			packageProductDependencies = (
-				4C6EB7302E9AECC30038D888 /* FactoryKit */,
+				4CEE47C42FFFE54000470E71 /* FactoryKitDynamic */,
 			);
 			productName = Networking;
 			productReference = 4CCC84202868CF8800B474F7 /* Networking.framework */;
@@ -515,9 +517,9 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		4C6EB7302E9AECC30038D888 /* FactoryKit */ = {
+		4CEE47C42FFFE54000470E71 /* FactoryKitDynamic */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = FactoryKit;
+			productName = FactoryKitDynamic;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

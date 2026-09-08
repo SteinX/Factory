@@ -148,19 +148,13 @@ Both provider factories reference the same factory. When Factory is asked for an
 
 There are a few caveats and considerations for using graph. The first is that anyone who wants to participate in the graph needs to explicitly state as such using the graph scope. Note the scope parameter for `commonProviding`.
 
-The second is that there needs to be a "root" to the graph. 
+The second is that graph scope must be explicitly enabled on the Container manager (`graphScopeEnabled`), or the Container's `defaultScope` must be set to `.graph`. 
 
-In the above example, the `consumer` object is the root. Factory is asked for a consumer, which in turn requires two providers. 
-
-If you were to instantiate an instance of `ProtocolConsumer` yourself, each one of ProtocolConsumer's Injected property wrappers would initialize sequentially on the same thread, resulting in two separate and distinct resolution cycles.
-
-See: <doc:Cycle> for more on this.
-
-Finally, any container with a Factory that uses graph scope will suffer a slight performance penalty on *all* Factory resolutions, especially when resolving across multiple threads. 
+Finally, also note that any container with graph scope enabled will suffer a slight performance penalty on *all* Factory resolutions, especially when resolving across multiple threads. 
 
 Use it only if and when you need it. 
 
-One could get much the same result from doing the following.
+One could get much the same behavior from doing the following.
 
 ```swift
     extension Container {
@@ -174,6 +168,8 @@ One could get much the same result from doing the following.
     }
 ```
 With the caveat that in this case that *anyone* who requests an instance of `commonProviding` will get and share the same reference.
+
+>Warning: Remember, if you plan on using graph scope on any factory you either need to set the container's `graphScopeEnabled` to true or set its `defaultScope` to `.graph`
 
 ## Unique
 

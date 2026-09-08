@@ -1,5 +1,34 @@
 # Factory Changelog
 
+### 3.3.2
+
+* Circular-dependency check false-positives on cross-container delegation #377
+
+### 3.3.1
+
+* Fix debug function in release build #376
+
+### 3.3.0
+
+* Breaking change to graph scope management and performance on containers
+* Adds manager.graphScopeEnabled flag to container (required if any of a container's scopes are .graph)
+* Automatically sets manager.graphScopeEnabled flag if a container's default scope is set to .graph
+* Update FactoryTesting documentation and recommendations per #372
+* Key simplification changes
+
+### 3.2.3
+
+* Fix for key regression issue #373
+
+### 3.2.2
+
+* Factory supports Xcode 27 skill manifests and its skill can now be imported into Xcode
+
+### 3.2.1
+
+* Add resolveOnMainActor and resolveOnGlobalActor functions for correct resolutions on detached tasks #370
+* Add Actors documentation explaining how to register and resolve actors and MainActor/globalActor instances
+
 ## 3.2.0
 
 * Added callAsFunction extensions to Factory's to simplify registration and SwiftUI previews even further

@@ -370,6 +370,38 @@ To import FactoryTesting you'll need to add that dependency to your project and 
 ])
 ```
 
+#### Multi-Module Apps and FactoryKitDynamic
+
+If your app is split into several separately-compiled modules (each its own framework or Xcode project) you may already be linking `FactoryKitDynamic` instead of `FactoryKit`. 
+
+That's required in this situation. If every module linked the static `FactoryKit` target directly, each would get its *own* private copy of `Container.shared` and `Scope.singleton`, so registrations made in one module would be invisible to another. `FactoryKitDynamic` solves that by giving every module a single shared dynamic library instance.
+
+`FactoryTesting`, however, is built against the static `FactoryKit` target, not `FactoryKitDynamic`. Linking `FactoryTesting` into a test target that's part of a `FactoryKitDynamic`-based module graph reintroduces the exact problem `FactoryKitDynamic` was meant to fix: your test target ends up with its own separate, disconnected copy of `FactoryKit`, so registering mocks against `Container.shared` in your test has no effect on the `Container.shared` your app code under test actually resolves against. Tests that appear to pass may simply not be exercising the mock at all.
+
+There's currently no way to build a `FactoryTestingDynamic` product for this without vendoring `FactoryKit` a second time — see [issue #372](https://github.com/hmlongco/Factory/issues/372) for the full discussion. The practical workaround, until/unless that changes:
+
+1. Don't add `FactoryTesting` as a dependency of your test target.
+2. Link `FactoryKitDynamic` in your test target, same as your other modules.
+3. Copy [`ContainerTrait.swift`](https://github.com/hmlongco/Factory/blob/main/Sources/FactoryTesting/ContainerTrait.swift) directly into your test target as a source file. It's a single small file with no dependencies beyond `FactoryKit` and `Testing`, so there's nothing else to vendor.
+
+```swift
+// DO THIS for multi-module apps using FactoryKitDynamic
+.testTarget(name: "MyAppTests", dependencies: [
+    "MyApp",
+    "FactoryKitDynamic", // not FactoryKit
+])
+// ...and add a copy of ContainerTrait.swift as a source file in MyAppTests.
+
+// DO NOT DO THIS
+.testTarget(name: "MyAppTests", dependencies: [
+    "MyApp",
+    "FactoryKitDynamic",
+    "FactoryTesting", // BAD! Pulls in a second, disconnected copy of FactoryKit.
+])
+```
+
+If your app is a single module with no `FactoryKitDynamic` anywhere in the graph, none of this applies — just use `FactoryTesting` as described above.
+
 #### Suite Trait
 
 You can go one step further (or higher if you will) by adding the trait to your `@Suite` macro as below.

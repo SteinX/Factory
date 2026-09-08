@@ -87,7 +87,7 @@ final class FactoryCoreTests: XCTestCase {
     func testResetOptions() {
         func registerAndResolve() {
             // Sneak in code coverage on with as well
-            Container.shared.with {
+            Container.shared {
                 $0.cachedService.register {
                     MyService()
                 }
@@ -206,6 +206,14 @@ final class FactoryCoreTests: XCTestCase {
     }
 
     @MainActor
+    func testCrossContainerCircularDependencyFalsePositive() {
+        Container.shared.manager.trace = true
+        let service: MyServiceType = CustomContainer.shared.crossServiceType()
+        XCTAssertNotNil(service)
+        Container.shared.manager.trace = false
+    }
+
+    @MainActor
     func testCircularDependencyToggle() {
         Container.shared.manager.circularDependencyTesting.toggle()
         var valid: Bool = false
@@ -248,6 +256,8 @@ final class FactoryCoreTests: XCTestCase {
 
     func testTrace() {
         var log: [String] = []
+        // Temporarily enable
+        Container.shared.manager.graphScopeEnabled = true
         Container.shared.manager.logger = {
             log.append($0)
             print($0)
@@ -287,6 +297,8 @@ final class FactoryCoreTests: XCTestCase {
         Container.shared.manager.logger = {
             print($0)
         }
+        // Reset
+        Container.shared.manager.graphScopeEnabled = false
     }
 
 #if canImport(SwiftUI)

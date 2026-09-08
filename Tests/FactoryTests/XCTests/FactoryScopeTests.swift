@@ -308,12 +308,16 @@ final class FactoryScopeTests: XCTestCase {
     }
 
     func testImplementsGraphScope() throws {
+        // Temporarily enable
+        Container.shared.manager.graphScopeEnabled = true
         // Has base to graph scope
         let consumer = Container.shared.consumer()
         XCTAssertTrue(consumer.ids.id == consumer.values.id)
         // No base to the graph scope
         let consumer2 = ProtocolConsumer()
         XCTAssertTrue(consumer2.ids.id != consumer2.values.id)
+        // reset
+        Container.shared.manager.graphScopeEnabled = false
     }
 
     func testRegisteringNewScope() throws {

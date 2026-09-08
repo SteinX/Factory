@@ -61,12 +61,13 @@ public nonisolated struct FactoryRegistration<P,T> {
 
         let options: FactoryOptions? = manager.options[key]
         let scope: Scope? = options?.scope ?? manager.defaultScope
+        let hasGraphScope = manager.state.hasGraphScope
         let decorator: ((Any) -> ())? = manager.state.defaultDecorator
 
         #if DEBUG
-        let globalLockRequired = manager.state.hasGraphScope || globalTraceFlag || globalCircularDependencyTesting
+        let globalLockRequired = hasGraphScope || globalTraceFlag || globalCircularDependencyTesting
         #else
-        let globalLockRequired = manager.state.hasGraphScope
+        let globalLockRequired = hasGraphScope
         #endif
 
         manager.lock.unlock()
@@ -109,14 +110,18 @@ public nonisolated struct FactoryRegistration<P,T> {
             globalTraceResolutions.append(entry)
         }
 
-        if globalCircularDependencyTesting, globalCircularDependencyKeys.insert(key).0 == false {
+        let recursiveKey = RecursiveKey(container: container, key: key)
+
+        if globalCircularDependencyTesting, globalCircularDependencyKeys.insert(recursiveKey).0 == false {
             globalTraceResolutions.forEach { globalLogger($0) }
             let message = "FACTORY: Circular dependency on \(type(of: container)).\(key.key)"
             resetAndTriggerFatalError(message, #file, #line)
         }
         #endif
 
-        Scope.graph.enter()
+        if hasGraphScope {
+            Scope.graph.enter()
+        }
 
         if let scope {
             let pKey = options?.scopeOnParameters == true ? key.parameterized(parameters) : key
@@ -125,11 +130,13 @@ public nonisolated struct FactoryRegistration<P,T> {
             (instance, instantiated) = (current(parameters), true)
         }
 
-        Scope.graph.leave()
+        if hasGraphScope {
+            Scope.graph.leave()
+        }
 
         #if DEBUG
         if globalCircularDependencyTesting {
-            globalCircularDependencyKeys.remove(key)
+            globalCircularDependencyKeys.remove(recursiveKey)
         }
 
         if globalTraceFlag {
@@ -202,7 +209,10 @@ extension FactoryRegistration {
         } else {
             manager.options[key] = FactoryOptions(scope: scope)
         }
-        if scope === Scope.graph {
+        if scope === Scope.graph && manager.state.hasGraphScope == false {
+            #if DEBUG
+            globalLogger("FACTORY: Graph scope requested on container where graphScopeEnabled was false. Results indeterminate.")
+            #endif
             manager.state.hasGraphScope = true
         }
     }

@@ -4,7 +4,29 @@
       "Bash(swift build *)",
       "Bash(swift test *)",
       "Bash(git -C /Users/michael/Dropbox/Projects/iOS/OSS/Factory/Factory branch --show-current)",
-      "Bash(git -C /Users/michael/Dropbox/Projects/iOS/OSS/Factory/Factory status --short)"
+      "Bash(git -C /Users/michael/Dropbox/Projects/iOS/OSS/Factory/Factory status --short)",
+      "Bash(tail -30 /Users/michael/Dropbox/Projects/iOS/OSS/Factory/Articles/callAsFunction.md)",
+      "Bash(swift package *)",
+      "Bash(ln -s Sources/FactoryTesting /tmp/factorytesting_symlink_test)",
+      "Read(//tmp/**)",
+      "Bash(rm -f /tmp/factorytesting_symlink_test)",
+      "Bash(ln -s FactoryTesting Sources/FactoryTestingDynamicSrc)",
+      "Bash(python3 -c ' *)",
+      "Bash(otool -L .build/out/Products/Debug/libFactoryTestingDynamic.dylib)",
+      "Bash(nm -gU .build/out/Products/Debug/libFactoryTestingDynamic.dylib)",
+      "Bash(ln -s ../../../Sources/FactoryTesting/ContainerTrait.swift ContainerTrait.swift)",
+      "Bash(nm -gu .build/out/Products/Debug/libFactoryTestingDynamic.dylib)",
+      "Bash(awk '/4CA5899529DE482D00FA7845 \\\\/\\\\* FactoryDemoTests \\\\*\\\\/ = \\\\{/,/^\\\\t\\\\t\\\\};/' FactoryDemo/FactoryDemo.xcodeproj/project.pbxproj)",
+      "Bash(plutil -p .swiftpm/xcode/package.xcworkspace/xcuserdata/michael.xcuserdatad/IDEFindNavigatorScopes.plist)",
+      "Bash(git check-ignore *)",
+      "Read(//Users/michael/Dropbox/Projects/iOS/OSS/Factory/**)",
+      "Bash(find . -maxdepth 2 -iname \"*movie*\")",
+      "Bash(find \"/Users/michael/Dropbox/Projects/iOS/OSS\" -maxdepth 2 2>/dev/null)",
+      "Bash(find /Users/michael/Dropbox/Projects/iOS/OSS/MovieDemo -maxdepth 3 -not -path */.git*)",
+      "Bash(xcodebuild test *)",
+      "Bash(xcodebuild -list)",
+      "Bash(find /Users/michael/Library/Developer/Xcode/DerivedData -maxdepth 4 -iname \"Test-FactoryDemo-*.xcresult\" 2>/dev/null | sort | tail -1)",
+      "Bash(xcrun xcresulttool *)"
     ]
   }
 }

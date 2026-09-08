@@ -29,8 +29,7 @@ internal struct FactoryKey: Hashable {
 
     let type: ObjectIdentifier
     let key: StaticString
-
-    var parameter: Int
+    let parameter: Int
 
     internal init(type: Any.Type, key: StaticString) {
         self.type = ObjectIdentifier(type) // globalIdentifier(for: type)
@@ -38,75 +37,62 @@ internal struct FactoryKey: Hashable {
         self.parameter = 0
     }
 
+    @inline(__always)
+    private init(type: ObjectIdentifier, key: StaticString, parameter: Int) {
+        self.type = type
+        self.key = key
+        self.parameter = parameter
+    }
+
     internal func hash(into hasher: inout Hasher) {
         hasher.combine(self.type)
-        if key.hasPointerRepresentation {
-            hasher.combine(UInt(bitPattern: key.utf8Start))
-        } else {
-            hasher.combine(key.unicodeScalar.value)
-        }
+        hasher.combine(self.key)
         hasher.combine(self.parameter)
     }
 
     internal static func == (lhs: Self, rhs: Self) -> Bool {
-        guard lhs.type == rhs.type
-                && lhs.key.hasPointerRepresentation == rhs.key.hasPointerRepresentation
-                && lhs.parameter == rhs.parameter
-        else {
-            return false
-        }
-        if lhs.key.hasPointerRepresentation {
-            return lhs.key.utf8Start == rhs.key.utf8Start || strcmp(lhs.key.utf8Start, rhs.key.utf8Start) == 0
-        } else {
-            return lhs.key.unicodeScalar.value == rhs.key.unicodeScalar.value
-        }
+        lhs.key == rhs.key && lhs.type == rhs.type && lhs.parameter == rhs.parameter
     }
 
     internal func parameterized(_ value: Any) -> Self {
         guard let hashable = value as? any Hashable else {
             return self
         }
-        var copy = self
-        copy.parameter = hashable.hashValue
-        return copy
+        return .init(type: type, key: key, parameter: hashable.hashValue)
     }
 
     internal func normalized() -> Self {
-        var copy = self
-        copy.parameter = 0
-        return copy
+        return .init(type: type, key: key, parameter: 0)
     }
 
 }
 
-// Quickly returns a unique type identifier for a given type name ("MyApp.MyType").
-//
-// This code normalizes the same name to the same ObjectIdentifier, basically translating every name seen to the first object
-// identifier seen for that name.
-//
-// The previous solution used an id based solely on ObjectIdentifier(type), which could have a different type id for the same type name across
-// separately compiled modules.
-//
-// Obtaining and using the class name string directly on every call results in code that's 2-3x slower.
-// private func globalIdentifier(for type: Any.Type) -> ObjectIdentifier {
-//    globalVariableLock.withLock {
-//        let requestedTypeID = ObjectIdentifier(type)
-//        // if known return it
-//        if let knownID = globalKnownIdentifierTable[requestedTypeID] {
-//            return knownID
-//        }
-//        // this is what we're bypassing. extremely slow runtime function.
-//        let name = String(reflecting: type)
-//        // magic happens here, if name is already known then get original key for it
-//        let id = globalNameToIdentifierTable[name, default: requestedTypeID]
-//        // and save it so we don't have to do this again
-//        globalKnownIdentifierTable[requestedTypeID] = id
-//        return id
-//    }
-// }
+extension StaticString: @retroactive Hashable {
+    public func hash(into hasher: inout Hasher) {
+        if self.hasPointerRepresentation {
+            hasher.combine(bytes: UnsafeRawBufferPointer(start: self.utf8Start, count: self.utf8CodeUnitCount))
+        } else {
+            hasher.combine(self.unicodeScalar)
+        }
+    }
 
-// quickly denormalizes the requested type identifier to a known type identifier
-nonisolated(unsafe) private var globalKnownIdentifierTable: [ObjectIdentifier : ObjectIdentifier] = [:]
+    public static func == (lhs: StaticString, rhs: StaticString) -> Bool {
+        guard lhs.hasPointerRepresentation == rhs.hasPointerRepresentation else {
+            return false
+        }
+        if lhs.hasPointerRepresentation {
+            return strcmp(lhs.utf8Start, rhs.utf8Start) == 0
+        } else {
+            return lhs.unicodeScalar == rhs.unicodeScalar
+        }
+    }
+}
 
-// translates a type string name to a ObjectIdentifier
-nonisolated(unsafe) private var globalNameToIdentifierTable: [String : ObjectIdentifier] = [:]
+struct RecursiveKey: Hashable, Equatable {
+    let container: ObjectIdentifier
+    let key: FactoryKey
+    init(container: ManagedContainer, key: FactoryKey) {
+        self.container = ObjectIdentifier(container)
+        self.key = key
+    }
+}

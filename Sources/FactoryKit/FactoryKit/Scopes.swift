@@ -135,6 +135,8 @@ extension Scope {
     /// Defines the graph scope. A single instance of a given type will be returned during a given resolution cycle.
     ///
     /// This scope is managed and cleared by the main resolution function at the end of each resolution cycle.
+    ///
+    /// Graph scope must be enabled on the Container manager (`graphScopeEnabled`) or the Container's `defaultScope` must be set to `.graph`.`
     public final class Graph: Scope, @unchecked Sendable  {
         internal override init() {
             super.init()

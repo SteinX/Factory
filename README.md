@@ -5,7 +5,7 @@
 
 A modern approach to Container-Based Dependency Injection for Swift and SwiftUI.
 
-## Factory Version 3.3.2
+## Factory Version 3.4.0
 
 Factory is strongly influenced by SwiftUI, and in my opinion is highly suited for that environment. Factory is...
 
@@ -438,7 +438,7 @@ To do so, open your project in Xcode and...
 1. Select `File > Packages > Update to Latest Package Versions`
 2. Select `File > Packages > Reset Package Caches`
 3. Go to your application target, remove the `Factory` library, and add the `FactoryKit` library
-4. Go a global search and replace, renaming `import Factory` to `import FactoryKit`
+4. Do a global search and replace, renaming `import Factory` to `import FactoryKit`
 5. Clean and build your project.
 
 You may need to do the same for any other targets or modules that imported Factory.

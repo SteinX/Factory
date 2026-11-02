@@ -6,7 +6,7 @@
   "baseline": {
     "tag": "3.5.2",
     "sha": "ab10ce2786f18c66e551afe61fa0b650f0b6e55b",
-    "approved": false
+    "approved": true
   },
   "allowedPaths": ["README.md", "CHANGELOG"]
 }

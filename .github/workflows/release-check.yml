@@ -23,7 +23,7 @@ jobs:
         env:
           RELEASE_TAG: ${{ inputs.tag || github.event.release.tag_name }}
         run: |
-          [[ "$RELEASE_TAG" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "Not a stable semver tag: $RELEASE_TAG"; exit 1; }
+          [[ "$RELEASE_TAG" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+(-fork\.[0-9]+)?$ ]] || { echo "Not a stable semver or -fork.N tag: $RELEASE_TAG"; exit 1; }
           echo "tag=$RELEASE_TAG" >> "$GITHUB_ENV"
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:

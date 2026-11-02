@@ -91,12 +91,11 @@ verifies the release tag matches `s.version` in `Factory.podspec` and that
 `swift test` passes at the tagged SHA. It is verification only; it does not
 publish anything.
 
-Fork releases currently use bare semver tags (`3.2.x`), which **collide with
-upstream tag names** — the fork's `3.2.0`/`3.2.1` are different commits from
-upstream's. A synced upstream `3.4.1` cannot be released under the name
-`3.4.1` without the same ambiguity. Choosing a non-colliding release scheme
-(build-metadata or suffix tags such as `3.4.1-fork.1`, or a distinct fork
-minor line) is a maintainer decision required before live releases.
+Fork releases use `<upstream-version>-fork.<N>` suffix tags (e.g.
+`3.5.2-fork.1`), which never collide with upstream's bare-semver tag names.
+`release-check.yml` accepts exactly this suffix on top of `X.Y.Z`. The fork's
+older bare `3.2.x` tags predating this scheme remain as-is; do not tag bare
+semver releases going forward — `3.5.2`-style names are upstream's namespace.
 
 ## Required before live automation (not implemented in this increment)
 
@@ -106,7 +105,8 @@ minor line) is a maintainer decision required before live releases.
 - Candidate PR implementation, durable batch state, deduplication, bounded
   retries and a global pause switch; retain merge ancestry or an explicit
   replay baseline if squash-only rules apply.
-- A decided, non-colliding fork release version scheme (see above).
+- ~~A decided, non-colliding fork release version scheme~~ — decided:
+  `<upstream-version>-fork.<N>` (see above).
 - Trusted check issuer/run verification, expected test inventory,
   authenticated evidence and exact head/base checks at merge time. Candidate
   scripts cannot certify themselves. Source changes invalidate evidence.

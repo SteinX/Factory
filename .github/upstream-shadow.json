@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "mode": "shadow",
+  "upstream": "hmlongco/Factory",
+  "fork": "SteinX/Factory",
+  "baseline": {
+    "tag": "3.4.0",
+    "sha": "b02457db582b6773c578f407e43350a15bf79cb6",
+    "approved": false
+  },
+  "allowedPaths": ["README.md", "CHANGELOG"]
+}

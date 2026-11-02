@@ -33,15 +33,20 @@ test('sensitive, unknown, moved paths and major/minor updates fail closed', () =
 });
 
 test('missing, skipped, duplicate and stale evidence fails; even complete JSON cannot authorize a merge', () => {
-  const snapshot = { batchId: 'batch', sources: { fork: 'a'.repeat(40) }, decision: 'READY_FOR_VALIDATION' };
+  const snapshot = { batchId: 'batch', decision: 'READY_FOR_VALIDATION',
+    sources: { upstreamBaseline: 'a'.repeat(40), upstreamCandidate: 'b'.repeat(40), fork: 'c'.repeat(40) } };
   const evidence = { batchId: 'batch', sources: snapshot.sources,
     gates: REQUIRED_GATES.map((name) => ({ name, status: 'success', tests: 1, skipped: 0,
       runUrl: 'https://github.com/SteinX/Factory/actions/runs/123' })) };
   assert.equal(assessEvidence(snapshot, evidence).wouldPassLocalShapeChecks, true);
   assert.equal(assessEvidence(snapshot, evidence).mergeAllowed, false);
   assert.equal(assessEvidence(snapshot, evidence).publishAllowed, false);
+  const reordered = { ...evidence, sources: Object.fromEntries(Object.entries(snapshot.sources).reverse()) };
+  assert.notEqual(JSON.stringify(reordered.sources), JSON.stringify(snapshot.sources));
+  assert.equal(assessEvidence(snapshot, reordered).wouldPassLocalShapeChecks, true);
   for (const changed of [
-    { ...evidence, batchId: 'old' }, { ...evidence, sources: { fork: 'b'.repeat(40) } },
+    { ...evidence, batchId: 'old' }, { ...evidence, sources: { ...snapshot.sources, fork: 'd'.repeat(40) } },
+    { ...evidence, sources: { fork: snapshot.sources.fork } },
     { ...evidence, gates: [] }, { ...evidence, gates: [...evidence.gates, evidence.gates[0]] },
     { ...evidence, gates: evidence.gates.map((g) => ({ ...g, skipped: 1 })) },
     { ...evidence, gates: evidence.gates.map((g) => ({ ...g, status: 'cancelled' })) },

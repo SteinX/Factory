@@ -1,0 +1,42 @@
+name: Release check
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to verify
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    if: github.repository == 'SteinX/Factory'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Resolve and validate the tag
+        env:
+          RELEASE_TAG: ${{ inputs.tag || github.event.release.tag_name }}
+        run: |
+          [[ "$RELEASE_TAG" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "Not a stable semver tag: $RELEASE_TAG"; exit 1; }
+          echo "tag=$RELEASE_TAG" >> "$GITHUB_ENV"
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ env.tag }}
+          persist-credentials: false
+      - name: Verify tag matches the podspec version
+        run: |
+          VERSION=$(sed -nE 's/.*s\.version *= *"([^"]+)".*/\1/p' Factory.podspec | head -1)
+          echo "podspec version: $VERSION, tag: $tag"
+          test -n "$VERSION" && test "$VERSION" = "${tag#v}"
+      - name: Verify the tag is reachable from main
+        run: |
+          git fetch --no-tags https://github.com/SteinX/Factory.git main
+          git merge-base --is-ancestor HEAD FETCH_HEAD
+      - name: Build and test the tagged source
+        run: swift test

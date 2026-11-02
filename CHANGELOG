@@ -1,5 +1,29 @@
 # Factory Changelog
 
+### 3.5.2
+
+* Unpdated README and documentation to cover withContainer caveats and examples
+
+### 3.5.1
+
+* Updated code to support custom scene containers
+* Updated withContainer to register scene containers
+* Updated Updated InjectedObject and InjectedObservable to support custom per-scene containers
+* Updated InjectedContainer to read custom scene containers
+
+### 3.5.0
+
+* Added a `container` environment key for SwiftUI to support per-scene containers
+* Updated InjectedObject and InjectedObservable to support per-scene containers
+* Added withContainer syntax for SwiftUI Previews
+
+See /Advanced/Scenes in the documentation for more details.
+
+### 3.4.1
+
+* Scope performance optimization eliminates protocol conformance check #389
+* Reclaim scope resolution locks #387
+
 ### 3.4.0
 
 * Update SPM minimum supported iOS and aligned versions to iOS 15 for Xcode 27 #382

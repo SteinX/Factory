@@ -4,8 +4,8 @@
   "upstream": "hmlongco/Factory",
   "fork": "SteinX/Factory",
   "baseline": {
-    "tag": "3.4.0",
-    "sha": "b02457db582b6773c578f407e43350a15bf79cb6",
+    "tag": "3.5.2",
+    "sha": "ab10ce2786f18c66e551afe61fa0b650f0b6e55b",
     "approved": false
   },
   "allowedPaths": ["README.md", "CHANGELOG"]

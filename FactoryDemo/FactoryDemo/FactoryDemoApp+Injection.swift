@@ -11,6 +11,10 @@ import Common
 import SwiftUI
 
 extension Container {
+    var id: Factory<String> { self { UUID().uuidString }.cached }
+}
+
+extension Container {
 
     @MainActor var simpleService: Factory<SimpleService> {
         Factory(self) { SimpleService() }
@@ -97,6 +101,7 @@ extension Container {
     func setupMocks() {
         DemoContainer.shared.optionalService.register { SimpleService() }
         let _ = Container.shared.modelData()
+        id { "MOCKED" }
     }
 }
 

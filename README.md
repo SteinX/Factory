@@ -5,12 +5,12 @@
 
 A modern approach to Container-Based Dependency Injection for Swift and SwiftUI.
 
-## Factory Version 3.4.0
+## Factory Version 3.5.2
 
 Factory is strongly influenced by SwiftUI, and in my opinion is highly suited for that environment. Factory is...
 
 - **Adaptable**: Factory doesn't tie you down to a single dependency injection strategy or technique.
-- **Powerful**: Factory supports containers, scopes, passed parameters, contexts, decorators, unit tests, SwiftUI Previews, and much, much more.
+- **Powerful**: Factory supports containers, scopes, passed parameters, scenes, contexts, decorators, unit tests, SwiftUI Previews, and much, much more.
 - **Performant**: Little to no setup time is needed for the vast majority of your services, resolutions are extremely fast, and no compile-time scripts or build phases are needed.
 - **Safe**: Factory is compile-time safe; a factory for a given type must exist or the code simply will not compile.
 - **Concise**: Defining a registration usually takes just a single line of code. Same for resolution.
@@ -89,6 +89,7 @@ class ContentViewModel {
     }
 }
 ```
+
 Or if you want to use a Composition Root structure, just use the container to provide the required dependencies to a constructor.
 
 ```swift
@@ -112,9 +113,22 @@ struct FactoryDemoApp: App {
         }
     }
 }
-
 ```
-Factory also has a set of global dependency resolution functions. This global function can be easily replaced should you want to minimize your codebase's apparent dependency on Factory.
+
+New to Factory 3.5 is support for scene-based containers in SwiftUI. `InjectedObservable` and `InjectedObject` both obtain their containers from the environment and resolve their dependencies from the current scene.
+
+```swift
+struct ContentView: View {
+    @InjectedObservable(\.contentViewModel) var viewModel
+    var body: some View {
+        Text(viewModel.text)
+    }
+}
+```
+
+See [Scenes](https://hmlongco.github.io/Factory/documentation/factorykit/scenes) for more examples.
+
+Finally, Factory also has a set of global dependency resolution functions. These global functions can easily be replaced should you want to minimize your codebase's apparent dependency on Factory.
 ```swift
 final class NetworkService {
     let preferences: Preferences = dependency(\.preferences)
@@ -157,25 +171,23 @@ It's easy. Just replace `MyService` with a mock that also conforms to `MyService
 
 ```swift
 #Preview {
-    Container.shared.myService { MockService2() }
+    Container.shared.myService.register { MockService() }
     ContentView()
 }
 ```
-Note the line in our preview code where we’re gone back to our container and registered a new closure on our factory. This function overrides the default factory closure.
 
 Now when our preview is displayed `ContentView` creates a `ContentViewModel` which in turn has a dependency on `myService` using the `Injected` property wrapper. And when the wrapper asks the factory for an instance of `MyServiceType` it now gets a `MockService2` instead of the `MyService` type originally defined.
 
-This is a powerful concept that lets us reach deep into a chain of dependencies and alter the behavior of a system as needed.
+Views that use `@InjectedObject` or `@InjectedObservable` can also register from the view hierarchy.
 
-Note that Factory 3.2.0 added the new `callAsFunction` registration function that eliminated some of the boilerplate.
 ```swift
 #Preview {
-    // the old way, prior to 3.2
-    let _ = Container.shared.myService.register { MockService2() }
     ContentView()
+        .withContainer(\.myService) { MockService() }
 }
 ```
-The new way is cleaner and a lot more concise, so we'll use the new format going forward.
+
+Either way, this is a powerful concept that lets us reach deep into a chain of dependencies and alter the behavior of a system as needed.
 
 See the [Previews](https://hmlongco.github.io/Factory/documentation/factorykit/previews) documentation for more.
 

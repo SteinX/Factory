@@ -16,20 +16,20 @@ test('only stable semver releases, sorted by version, not GitHub latest or publi
 
 test('baseline approval and policy changes cannot silently activate writes', () => {
   validatePolicy(policy);
-  assert(classify(policy, '3.4.1', ['README.md']).reasons.includes('BASELINE_NOT_APPROVED'));
+  assert(classify(policy, '3.5.3', ['README.md']).reasons.includes('BASELINE_NOT_APPROVED'));
   assert.throws(() => validatePolicy({ ...policy, mode: 'live' }));
   assert.throws(() => validatePolicy({ ...policy, allowedPaths: ['Sources/'] }));
 });
 
 test('sensitive, unknown, moved paths and major/minor updates fail closed', () => {
   const approved = { ...policy, baseline: { ...policy.baseline, approved: true } };
-  assert.equal(classify(approved, '3.4.1', ['README.md']).decision, 'READY_FOR_VALIDATION');
+  assert.equal(classify(approved, '3.5.3', ['README.md']).decision, 'READY_FOR_VALIDATION');
   for (const file of ['Sources/FactoryKit/FactoryKit/Factory.swift', '.github/workflows/swift.yml',
     'CLAUDE.md', 'Package.swift', 'Factory.podspec', 'unknown.txt', 'CHANGELOG/../Sources/Factory.swift']) {
-    assert.equal(classify(approved, '3.4.1', [file, 'README.md']).decision, 'NEEDS_HUMAN');
+    assert.equal(classify(approved, '3.5.3', [file, 'README.md']).decision, 'NEEDS_HUMAN');
   }
-  assert.equal(classify(approved, '3.5.0', ['README.md']).decision, 'NEEDS_HUMAN');
-  assert.equal(classify(approved, '3.4.1', []).decision, 'NEEDS_HUMAN');
+  assert.equal(classify(approved, '3.6.0', ['README.md']).decision, 'NEEDS_HUMAN');
+  assert.equal(classify(approved, '3.5.3', []).decision, 'NEEDS_HUMAN');
 });
 
 test('missing, skipped, duplicate and stale evidence fails; even complete JSON cannot authorize a merge', () => {

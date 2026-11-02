@@ -16,7 +16,8 @@ test('only stable semver releases, sorted by version, not GitHub latest or publi
 
 test('baseline approval and policy changes cannot silently activate writes', () => {
   validatePolicy(policy);
-  assert(classify(policy, '3.5.3', ['README.md']).reasons.includes('BASELINE_NOT_APPROVED'));
+  const unapproved = { ...policy, baseline: { ...policy.baseline, approved: false } };
+  assert(classify(unapproved, '3.5.3', ['README.md']).reasons.includes('BASELINE_NOT_APPROVED'));
   assert.throws(() => validatePolicy({ ...policy, mode: 'live' }));
   assert.throws(() => validatePolicy({ ...policy, allowedPaths: ['Sources/'] }));
 });
